@@ -5,8 +5,8 @@
 import { defineStore } from "pinia";
 import { accessFolder, readDirectory, readFile } from "@/plugins/fileSystemAccessApi";
 import Yaml from "yaml";
-import { useCurrentFileStore } from "@/stores/currentFile";
-import { useIndexFileStore } from "@/stores/indexFile";
+// import { useCurrentFileStore } from "@/stores/currentFile";
+// import { useIndexFileStore } from "@/stores/indexFile";
 import { ref, computed } from "vue";
 
 export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
@@ -16,6 +16,15 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
   const isLoad = ref(false);
   const currentFileName = ref("");
   const filesNamesList = ref([]);
+
+  function $reset() {
+    files.value = null;
+    index.value = null;
+    directoryHandle.value = null;
+    isLoad.value = false;
+    currentFileName.value = "";
+    filesNamesList.value = [];
+  }
 
   const getFiles = () => {
     return files;
@@ -28,7 +37,10 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
   };
 
   const getCurrentFileData = computed(() => {
-    return files.value[currentFileName.value];
+    if (files.value) {
+      return files.value[currentFileName.value];
+    }
+    return null;
   });
 
   const accessingFolder = async () => {
@@ -77,8 +89,8 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
     index.value = result["index.yaml"] ? result["index.yaml"] : null;
 
     // set indexData file data
-    const indexFileStore = useIndexFileStore();
-    indexFileStore.setFileData(result["index.yaml"]);
+    // const indexFileStore = useIndexFileStore();
+    // indexFileStore.setFileData(result["index.yaml"]);
 
     //delete index file from result
     if (index.value) delete result["index.yaml"];
@@ -93,8 +105,8 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
 
     // set current file name
     currentFileName.value = filesNamesList.value[0];
-    const currentFileStore = useCurrentFileStore();
-    currentFileStore.setFileData(result[currentFileName.value]);
+    // const currentFileStore = useCurrentFileStore();
+    // currentFileStore.setFileData(result[currentFileName.value]);
     
 
     // set isLoad
@@ -112,6 +124,7 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
   };
 
   return {
+    $reset,
     files,
     index,
     directoryHandle,

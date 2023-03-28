@@ -2,9 +2,8 @@
   <v-container class="fill-height">
     <v-row class="fill-height">
       <v-col class="mt-2" cols="12">
-        <v-sheet class="fill-height d-flex align-center justify-center">
-          {{ $route.params }}
-          <h2>FileView</h2>
+        <v-sheet class="fill-height">
+          <h2>FileView {{ $route.params.fileName }}</h2>
           <div>
             {{ file }}
           </div>
@@ -15,23 +14,17 @@
 </template>
 
 <script>
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, watch, onBeforeMount } from 'vue'
 import { useMetaDirectoryStore } from '@/stores/metaDirectory'
 import { storeToRefs } from 'pinia'
 
-// const route = useRoute()
-// const { fileName } = route.params
-// const fn = function() {
-//   console.log('this.$route.params', this.$route.params);
-//   return this.$route.params
-// }
-
 export default {
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const file = ref()
-    const { currentFileName, getCurrentFileData } = storeToRefs(useMetaDirectoryStore())
+    const { currentFileName, getCurrentFileData, isLoad } = storeToRefs(useMetaDirectoryStore())
 
     onBeforeMount(() => {
       currentFileName.value = route.params.fileName
@@ -52,9 +45,18 @@ export default {
         }
       }
     )
+    watch(
+      () => isLoad.value,
+      (status) => {
+        if (status === false) {
+          router.push('/')
+        }
+      }
+    )
     
     return {
       file,
+      isLoad,
       currentFileName,
       getCurrentFileData
     }
