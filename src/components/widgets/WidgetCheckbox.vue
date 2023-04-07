@@ -1,31 +1,25 @@
 <template>
-  <p>
-    keyItem: {{ keyItem }}
-  </p>
-  <p>
-    modelValue: {{ modelValue }}
-  </p>
-
-    <!-- <v-checkbox
+  <div>
+    <v-checkbox
       :modelValue="modelValue"
       @update:modelValue="($event) => $emit('update:modelValue', $event)"
       :label="keyItem"
-    ></v-checkbox> -->
+    ></v-checkbox>
+  </div>
 </template>
+
 <script>
 export default {
   props: {
     modelValue: {
-      type: Boolean,
+      type: Boolean
     },
     keyItem: {
-      type: String,
-    },
+      type: String
+    }
   },
-  emits: ["update:modelValue"],
-};
+  emits: ['update:modelValue']
+}
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

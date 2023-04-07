@@ -1,25 +1,13 @@
 <template>
   <div>
-    <p>
-      keyItem:  {{ keyItem }}
-    </p>
-    <p>
-      modelValue:  {{ modelValue }}
-    </p>
-    <p>
-      renderData: {{ renderData }}
-    </p>
-    <p>
-      fieldType: {{ fieldType }}
-    </p>
-    <!-- <v-select
+    <v-select
       :modelValue="modelValue"
       @update:modelValue="($event) => $emit('update:modelValue', $event)"
       :items="itemsFromType"
       :label="keyItem"
       :rules="validationRules"
       variant="underlined"
-    ></v-select> -->
+    ></v-select>
   </div>
 </template>
 <script>
@@ -44,6 +32,16 @@ export default {
   },
   emits: ["update:modelValue"],
   setup: (props, { emit }) => {
+
+    const itemsFromType = computed(() => {
+      if (props.renderData.mapping !== undefined) {
+        return props.renderData.mapping.js_type[props.fieldType];
+      } else {
+        return props.renderData.values;
+
+      }
+    });
+
     watch(() => props.fieldType, () => {
         // console.log(modelValue);
         const isValidEnum = rules.isValidEnum(props.modelValue, itemsFromType.value);
@@ -51,14 +49,9 @@ export default {
           emit('update:modelValue', itemsFromType.value[0])
         }
     });
-    const itemsFromType = computed(() => {
-      if (props.renderData.mapping === undefined) {
-        return props.renderData.values;
-      } else {
-        return props.renderData.mapping.json_type[props.fieldType];
-      }
-    });
+    
     const validationRules = [(v) => rules.requied(v), (v) => rules.isValidEnum(v, itemsFromType.value)];
+
     return {
       itemsFromType,
       validationRules,

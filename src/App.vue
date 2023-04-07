@@ -1,20 +1,36 @@
 <template>
   <v-app id="inspire">
+    <v-layout>
+
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
       <v-toolbar-title>Meta-data editor</v-toolbar-title>
     </v-app-bar>
 
-    <v-navigation-drawer app v-model="drawer" hide-overlay>
+    <v-navigation-drawer app v-model="drawer" hide-overlay width="300" >
       
       <FilesListMenu />
 
     </v-navigation-drawer>
 
-    <v-main class="bg-grey-lighten-2">
+      <v-navigation-drawer app location="right" style=" hide-overlay font-size: 12px"
+      permanent
+        width="300"
+        >
+        <v-list>
+          <v-list-item title="Fields">
+            <pre v-if="getCurrentFileData">
+              {{ getCurrentFileData.fileData.fields }}
+            </pre>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+
+    <v-main class="bg-grey-lighten-2" >
       <RouterView />
     </v-main>
+  </v-layout>
   </v-app>
 </template>
 
@@ -28,7 +44,7 @@ import { useRouter } from "vue-router";
 import FilesListMenu from "@/components/FilesListMenu.vue";
 
 const drawer = ref(null);
-const { isLoad, currentFileName } = storeToRefs(useMetaDirectoryStore());
+const { isLoad, currentFileName, getCurrentFileData } = storeToRefs(useMetaDirectoryStore());
 const router = useRouter();
 
 watch(isLoad, () => {

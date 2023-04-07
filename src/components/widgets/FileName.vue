@@ -1,66 +1,76 @@
 <template>
-  <div>
-    <p>
-      keyItem: {{ keyItem }}
-    </p>
-    <p>
-      modelValue: {{ modelValue }}
-    </p>
-    <p>
-      renderData:  {{ renderData }}
-    </p>
-    <!-- <v-text-field
-      v-model="name"
-      :label="keyItem"
-      variant="underlined"
-      :rules="validationRules"
-    ></v-text-field> -->
-  </div>
+  <v-text-field
+    v-model="fileName"
+    :rules="validationRules"
+    variant="underlined"
+    :label="keyItem"
+    width="300px"
+  ></v-text-field>
 </template>
 
 <script>
-// import store
-import { useCurrentFileStore } from "@/stores/currentFile";
-import { storeToRefs } from "pinia";
-import { rules } from "@/validation/rules";
+import { rules } from '@/validation/rules'
+import { ref, watch } from 'vue'
 
 export default {
   props: {
     renderData: {
-      type: Object,
+      type: Object
     },
     keyItem: {
-      type: String,
+      type: String
     },
-    modelValue: {
+    intialFileName: {
       type: String,
+      required: true
     },
+    filesNamesList: {
+      type: Array
+    }
   },
-  setup: () => {
-    const { name } = storeToRefs(useCurrentFileStore());
-    const { getFilesListForCurrentFile } = storeToRefs(useCurrentFileStore());
+  emits: ['update:fileName'],
+  setup(props, { emit }) {
+    const fileName = ref(props.intialFileName)
+
+    watch(fileName, (newValue) => {
+      if (
+        validationRules.every((rule) => rule(newValue) === true) &&
+        newValue !== props.intialFileName
+      ) {
+        emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
+      }
+    })
+
+    watch(
+      () => props.intialFileName,
+      (newValue) => {
+        fileName.value = newValue
+      }
+    )
+
     const validationRules = [
-      (v) => rules.regexp(v, renderData.validation.regexp, keyItem),
-      (v) =>
+      (newValue) => rules.regexp(newValue, props.renderData.validation.regexp, props.keyItem),
+      (newValue) =>
         rules.unique(
-          v,
-          renderData.validation.unique,
-          getFilesListForCurrentFile
-        ),
-    ];
-  
+          newValue,
+          props.intialFileName,
+          props.renderData.validation.unique,
+          props.filesNamesList
+        )
+    ]
+
     return {
-      validationRules,
-      name,
-      getFilesListForCurrentFile,
-    };
-  },
-};
+      fileName,
+      validationRules
+    }
+  }
+}
 </script>
 
 <style scoped>
-.v-text-field :deep(input) {
-  font-size: 1.2em;
+.v-text-field {
+  /* font-size: 1.2em; */
   font-weight: bold;
+  /* width: 300px; */
 }
 </style>

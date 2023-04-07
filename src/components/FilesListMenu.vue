@@ -58,7 +58,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const store = useMetaDirectoryStore()
-const { filesNamesList, isLoad } = storeToRefs(useMetaDirectoryStore())
+const { filesNamesList, isLoad } = storeToRefs(store)
 const router = useRouter()
 const selectedItem = ref(null)
 </script>
