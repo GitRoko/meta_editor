@@ -1,16 +1,16 @@
 <template>
   <v-text-field
-    v-model="fileName"
-    :rules="validationRules"
+    :modelValue="fileName"
+    @update:modelValue="updateFileName($event)"
     variant="underlined"
     :label="keyItem"
-    width="300px"
+    :error-messages="errorMessages"
   ></v-text-field>
 </template>
 
 <script>
 import { rules } from '@/validation/rules'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 export default {
   props: {
@@ -32,14 +32,15 @@ export default {
   setup(props, { emit }) {
     const fileName = ref(props.intialFileName)
 
-    watch(fileName, (newValue) => {
-      if (
-        validationRules.every((rule) => rule(newValue) === true) &&
-        newValue !== props.intialFileName
-      ) {
-        emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
-      }
-    })
+    const errorMessages = computed(() => {
+      const errors = []
+      validationRules.forEach((rule) => {
+        if (rule(fileName.value) !== true) {
+          errors.push(rule(fileName.value))
+        }
+      })
+      return errors
+    }) 
 
     watch(
       () => props.intialFileName,
@@ -47,9 +48,17 @@ export default {
         fileName.value = newValue
       }
     )
+    
+    const updateFileName = (newValue) => {
+      fileName.value = newValue
+
+      if (errorMessages.value.length === 0 && newValue !== props.intialFileName) {
+        emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
+      }
+    }
 
     const validationRules = [
-      (newValue) => rules.regexp(newValue, props.renderData.validation.regexp, props.keyItem),
+      (newValue) => rules.regexp(newValue, props.renderData.validation.regexp),
       (newValue) =>
         rules.unique(
           newValue,
@@ -61,7 +70,9 @@ export default {
 
     return {
       fileName,
-      validationRules
+      validationRules,
+      errorMessages,
+      updateFileName,
     }
   }
 }

@@ -1,37 +1,35 @@
-<template>
+<template v-if="currentFileName">
   <v-container class="fill-height v-container" width="1024">
     <v-row class="fill-height">
       <v-col class="mt-2" cols="12">
-          <v-card v-if="renderData['name']" class="px-2">
+        <v-card v-if="renderData['name']" class="px-2">
+          <component
+            :is="FileName"
+            :renderData="renderData['name']"
+            :filesNamesList="filesNamesList"
+            :keyItem="'name'"
+            :intialFileName="file.fileName"
+            @update:fileName="onFileNameUpdate"
+          ></component>
+        </v-card>
+        <div v-for="(value, key, i) in renderData" :key="`${i}-${key}`">
+          <v-card v-if="key !== 'name' && key !== 'fields'" class="my-2 px-2">
             <component
-              :is="FileName"
-              :renderData="renderData['name']"
-              :filesNamesList="filesNamesList"
-              :keyItem="'name'"
-              :intialFileName="file.fileName"
-              @update:fileName="onFileNameUpdate"
+              :is="widgetMap[value.widget]"
+              :renderData="value"
+              :keyItem="key"
+              v-model="file.fileData[key]"
             ></component>
           </v-card>
-            <div v-for="(value, key, i) in renderData" :key="`${i}-${key}`">
-              <v-card v-if="key !== 'name' && key !== 'fields'" class="my-2 px-2">
-                <component
-                :is="widgetMap[value.widget]"
-                :renderData="value"
-                :keyItem="key"
-                v-model="file.fileData[key]"
-                ></component>
-              </v-card>
-              <div v-if="key === 'fields'" class="">
-
-                <component
-                :is="widgetMap[value.widget]"
-                :renderData="value"
-                :keyItem="key"
-                v-model="file.fileData[key]"
-                ></component>
-
-              </div >
-            </div>
+          <div v-if="key === 'fields'" class="">
+            <component
+              :is="widgetMap[value.widget]"
+              :renderData="value"
+              :keyItem="key"
+              v-model="file.fileData[key]"
+            ></component>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -90,16 +88,15 @@ watch(
 
 const onFileNameUpdate = (updateData) => {
   const { oldName, newName } = updateData
-  console.log('new file name:', newName, oldName)
+  // console.log('new file name:', newName, oldName)
   store.updateFileName(oldName, newName)
   router.push(`/files/${newName}`)
 }
 </script>
 <style scoped>
-@media only screen and (min-width: 960px){
+@media only screen and (min-width: 960px) {
   .v-container {
     max-width: 960px;
   }
 }
-
 </style>

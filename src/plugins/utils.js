@@ -1,10 +1,7 @@
 export const objectToArray = (obj) => {
-  const fields = obj;
-  const newFields =  Object.keys(fields).map((key) => { 
-    return {[key]: fields[key]}
+  return Object.entries(obj).map(([fieldName, fieldItems]) => {
+    return {fieldName, fieldItems};
   });
-
-  return newFields;
 }
 
 export const arrayToObject = (arr) => {
@@ -16,4 +13,34 @@ export const arrayToObject = (arr) => {
   });
 
   return newFields;
+}
+
+export const getDefaultGenerator = (type) => {
+  // need make import values of generator type from index !!!
+  switch (type) {
+    case 'ip':
+      return {type: 'ip'};
+    case 'zip':
+      return {type: 'zip'};
+    case 'sample':
+      return {type: 'sample', sample: 'name'};
+  
+    default:
+      break;
+  }
+}
+
+export const getDefaultField = () => {
+  return {
+    fieldName: 'defaultField',
+    fieldItems: {
+      js_type: 'string',
+      optional: true,
+      db_type: 'varchar',
+      description: 'some defaultField',
+      generator: {
+        type: 'zip'
+      }
+    }
+  };
 }

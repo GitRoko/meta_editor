@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- <p>
-      keyItem:  {{ keyItem }}
-    </p> -->
-    <!-- <p>
-      modelValue: {{ modelValue }}
-    </p>
-    <p>
-      renderData:   {{ renderData }}
-    </p> -->
     <v-text-field
       class="mt-2"
       :modelValue="text"
@@ -51,6 +42,7 @@ export default {
         text.value = newValue
       }
     )
+
     const errorMessages = computed(() => {
       const errors = []
       validationRules.forEach((rule) => {
@@ -61,13 +53,6 @@ export default {
       return errors
     })
 
-    const isValid = computed(() => {
-      return validationRules.every((rule) => {
-        console.log(text.value, rule(text.value))
-        return rule(text.value) === true
-      })
-    })
-
     const validationRules = [
       (v) => rules.regexp(v, props.renderData.validation.regexp),
       (v) => rules.requied(v),
@@ -76,14 +61,13 @@ export default {
 
     const updateText = (newValue) => {
       text.value = newValue
-      if (isValid.value) {
+      if (errorMessages.value.length === 0) {
         emit('update:modelValue', newValue)
       }
     }
 
     return {
       rules,
-      isValid,
       text,
       updateText,
       validationRules,

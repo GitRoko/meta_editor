@@ -29,13 +29,16 @@ export default {
     fieldType: {
       type: String,
     },
+    mappingData: {
+      type: Object,
+    },
   },
   emits: ["update:modelValue"],
   setup: (props, { emit }) => {
 
     const itemsFromType = computed(() => {
       if (props.renderData.mapping !== undefined) {
-        return props.renderData.mapping.js_type[props.fieldType];
+        return props.renderData.mapping[props.mappingData.key][props.mappingData.value];
       } else {
         return props.renderData.values;
 

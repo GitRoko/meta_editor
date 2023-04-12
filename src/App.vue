@@ -14,7 +14,7 @@
 
     </v-navigation-drawer>
 
-      <v-navigation-drawer app location="right" style=" hide-overlay font-size: 12px"
+      <v-navigation-drawer app location="right" hide-overlay style="font-size: 10px"
       permanent
         width="300"
         >
