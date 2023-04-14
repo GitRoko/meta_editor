@@ -10,11 +10,6 @@ const routes = [
     name: "Home", 
     component: HomeView,
   },
-  // {
-  //   path: "/currentFile",
-  //   name: "CurrentFile",
-  //   component: () => import("@/views/CurrentFile.vue"),
-  // },
   {
     path: "/index",
     name: "Index",
@@ -26,7 +21,7 @@ const routes = [
     component: FileView,
   },
   {
-    path: "/:catchAll(.*)",
+    path: "/files/:pathMatch(.*)*",
     name: "PageNotFound",
     component: PageNotFound,
   },

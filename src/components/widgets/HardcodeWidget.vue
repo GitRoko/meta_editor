@@ -1,14 +1,12 @@
 <template>
-<!-- <pre>{{ props.modelValue }}</pre> -->
-<v-chip variant="plain" size="smal" >{{ props.modelValue }}</v-chip>
+  <!-- <pre>{{ props.modelValue }}</pre> -->
+  <v-chip variant="plain" size="smal">{{ modelValue }}</v-chip>
 </template>
 
 <script setup>
-const props = defineProps({
-  
+defineProps({
   modelValue: {
     type: String
-  },
-  
+  }
 })
 </script>

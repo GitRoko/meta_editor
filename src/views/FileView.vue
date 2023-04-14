@@ -1,32 +1,33 @@
 <template v-if="currentFileName">
-  <v-container class="fill-height v-container" width="1024">
-    <v-row class="fill-height">
+  <v-container class="fill-height" width="1024">
+    <v-row dense class="fill-height">
+      <v-col cols="12" class="pr-6 d-flex flex-row-reverse"> version: {{ getCurrentFileData.fileData.version }} </v-col>
       <v-col class="mt-2" cols="12">
-        <v-card v-if="renderData['name']" class="px-2">
+        <div v-if="renderData['name']" class="px-2">
           <component
             :is="FileName"
             :renderData="renderData['name']"
             :filesNamesList="filesNamesList"
             :keyItem="'name'"
-            :intialFileName="file.fileName"
-            @update:fileName="onFileNameUpdate"
+            :intialFileName="getCurrentFileData.fileName"
+            @update:fileName="store.updateFileName"
           ></component>
-        </v-card>
-        <div v-for="(value, key, i) in renderData" :key="`${i}-${key}`">
-          <v-card v-if="key !== 'name' && key !== 'fields'" class="my-2 px-2">
+        </div>
+        <div v-for="(value, key, i) in renderData" :key="i">
+          <div v-if="key !== 'name' && key !== 'fields'" class="my-2 px-2">
             <component
               :is="widgetMap[value.widget]"
               :renderData="value"
               :keyItem="key"
-              v-model="file.fileData[key]"
+              v-model="getCurrentFileData.fileData[key]"
             ></component>
-          </v-card>
+          </div>
           <div v-if="key === 'fields'" class="">
             <component
               :is="widgetMap[value.widget]"
               :renderData="value"
               :keyItem="key"
-              v-model="file.fileData[key]"
+              v-model="getCurrentFileData.fileData[key]"
             ></component>
           </div>
         </div>
@@ -37,7 +38,7 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, watch, onBeforeMount } from 'vue'
+import { watch, ref } from 'vue'
 import { useMetaDirectoryStore } from '@/stores/metaDirectory'
 import { storeToRefs } from 'pinia'
 import FileName from '@/components/widgets/FileName.vue'
@@ -46,10 +47,11 @@ import FieldsList from '@/components/widgets/FieldsList.vue'
 
 const route = useRoute()
 const router = useRouter()
-const file = ref(null)
-const renderData = ref(null)
 const store = useMetaDirectoryStore()
-const { currentFileName, getCurrentFileData, isLoad, index, filesNamesList } = storeToRefs(store)
+const { currentFileName, getCurrentFileData, isLoad, index, filesNamesList } = storeToRefs(
+  useMetaDirectoryStore()
+)
+const renderData = ref(index.value.fileData.module[0].data)
 
 const widgetMap = {
   text: TextInput,
@@ -57,22 +59,22 @@ const widgetMap = {
   list: FieldsList
 }
 
-onBeforeMount(() => {
-  currentFileName.value = route.params.fileName
-  if (getCurrentFileData.value) {
-    file.value = getCurrentFileData.value
-    renderData.value = index.value.fileData.module[0].data
-  }
-})
-
 watch(
   () => route.params.fileName,
   (fileName) => {
-    if (fileName !== undefined) {
+    if (filesNamesList.value.includes(fileName)) {
       currentFileName.value = fileName
-      if (getCurrentFileData.value) {
-        file.value = getCurrentFileData.value
-      }
+    } else {
+      router.push({name: "PageNotFound"})
+    }
+  }
+)
+
+watch(
+  () => currentFileName.value,
+  (fileName) => {
+    if (fileName !== route.params.fileName) {
+      router.push(`/files/${fileName}`)
     }
   }
 )
@@ -85,13 +87,6 @@ watch(
     }
   }
 )
-
-const onFileNameUpdate = (updateData) => {
-  const { oldName, newName } = updateData
-  // console.log('new file name:', newName, oldName)
-  store.updateFileName(oldName, newName)
-  router.push(`/files/${newName}`)
-}
 </script>
 <style scoped>
 @media only screen and (min-width: 960px) {

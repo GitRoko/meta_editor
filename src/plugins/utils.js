@@ -1,6 +1,6 @@
 export const objectToArray = (obj) => {
-  return Object.entries(obj).map(([fieldName, fieldItems]) => {
-    return {fieldName, fieldItems};
+  return Object.entries(obj).map(([key, items]) => {
+    return {key, items};
   });
 }
 
@@ -32,8 +32,8 @@ export const getDefaultGenerator = (type) => {
 
 export const getDefaultField = () => {
   return {
-    fieldName: 'defaultField',
-    fieldItems: {
+    key: 'defaultField',
+    items: {
       js_type: 'string',
       optional: true,
       db_type: 'varchar',

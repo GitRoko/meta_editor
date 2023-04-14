@@ -8,80 +8,68 @@
   ></v-text-field>
 </template>
 
-<script>
+<script setup>
 import { rules } from '@/validation/rules'
 import { ref, watch, computed } from 'vue'
 
-export default {
-  props: {
-    renderData: {
-      type: Object
-    },
-    keyItem: {
-      type: String
-    },
-    intialFileName: {
-      type: String,
-      required: true
-    },
-    filesNamesList: {
-      type: Array
-    }
+const props = defineProps({
+  renderData: {
+    type: Object
   },
-  emits: ['update:fileName'],
-  setup(props, { emit }) {
-    const fileName = ref(props.intialFileName)
+  keyItem: {
+    type: String
+  },
+  intialFileName: {
+    type: String,
+    required: true
+  },
+  filesNamesList: {
+    type: Array
+  }
+})
 
-    const errorMessages = computed(() => {
-      const errors = []
-      validationRules.forEach((rule) => {
-        if (rule(fileName.value) !== true) {
-          errors.push(rule(fileName.value))
-        }
-      })
-      return errors
-    }) 
+const emit = defineEmits(['update:fileName'])
 
-    watch(
-      () => props.intialFileName,
-      (newValue) => {
-        fileName.value = newValue
-      }
-    )
-    
-    const updateFileName = (newValue) => {
-      fileName.value = newValue
+const fileName = ref(props.intialFileName)
 
-      if (errorMessages.value.length === 0 && newValue !== props.intialFileName) {
-        emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
-      }
+const errorMessages = computed(() => {
+  const errors = []
+  validationRules.forEach((rule) => {
+    if (rule(fileName.value) !== true) {
+      errors.push(rule(fileName.value))
     }
+  })
+  return errors
+})
 
-    const validationRules = [
-      (newValue) => rules.regexp(newValue, props.renderData.validation.regexp),
-      (newValue) =>
-        rules.unique(
-          newValue,
-          props.intialFileName,
-          props.renderData.validation.unique,
-          props.filesNamesList
-        )
-    ]
+watch(
+  () => props.intialFileName,
+  (newValue) => {
+    fileName.value = newValue
+  }
+)
 
-    return {
-      fileName,
-      validationRules,
-      errorMessages,
-      updateFileName,
-    }
+const updateFileName = (newValue) => {
+  fileName.value = newValue
+
+  if (errorMessages.value.length === 0 && newValue !== props.intialFileName) {
+    emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
   }
 }
+
+const validationRules = [
+  (newValue) => rules.regexp(newValue, props.renderData.validation.regexp),
+  (newValue) =>
+    rules.unique(
+      newValue,
+      props.intialFileName,
+      props.renderData.validation.unique,
+      props.filesNamesList
+    )
+]
+
 </script>
 
 <style scoped>
-.v-text-field {
-  /* font-size: 1.2em; */
-  font-weight: bold;
-  /* width: 300px; */
-}
+
 </style>

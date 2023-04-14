@@ -8,18 +8,17 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    modelValue: {
-      type: Boolean
-    },
-    keyItem: {
-      type: String
-    }
+<script setup>
+defineProps({
+  modelValue: {
+    type: Boolean
   },
-  emits: ['update:modelValue']
-}
+  keyItem: {
+    type: String
+  }
+})
+
+defineEmits(['update:modelValue'])
 </script>
 
 <style scoped></style>

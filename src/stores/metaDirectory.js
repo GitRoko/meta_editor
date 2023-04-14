@@ -3,10 +3,8 @@
 // // https://www.youtube.com/watch?v=iNl6TA29hBM
 
 import { defineStore } from 'pinia'
-import { accessFolder, readDirectory, readFile, renameFile } from '@/plugins/fileSystemAccessApi'
+import { accessFolder, readDirectory, readFile } from '@/plugins/fileSystemAccessApi'
 import Yaml from 'yaml'
-// import { useCurrentFileStore } from "@/stores/currentFile";
-// import { useIndexFileStore } from "@/stores/indexFile";
 import { ref, computed } from 'vue'
 import { objectToArray } from '@/plugins/utils'
 
@@ -16,7 +14,6 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
   const directoryHandle = ref(null)
   const isLoad = ref(false)
   const currentFileName = ref('')
-  // const filesNamesList = ref([]);
 
   function $reset() {
     files.value = null
@@ -24,7 +21,6 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     directoryHandle.value = null
     isLoad.value = false
     currentFileName.value = ''
-    // filesNamesList.value = [];
   }
 
   const getFiles = () => {
@@ -39,10 +35,10 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
 
   const getCurrentFileData = computed(() => {
     if (files.value) {
-      let currentFileKey = Object.keys(files.value).find((key) => key === currentFileName.value)
+      // let currentFileKey = Object.keys(files.value).find((key) => key === currentFileName.value)
 
-      console.log(currentFileKey)
-      return files.value[currentFileKey] || null
+      // console.log(currentFileKey)
+      return files.value[currentFileName.value]
 
       // return files.value[currentFileName.value];
     }
@@ -65,20 +61,21 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     }
   }
 
-  const updateFileName = async (oldFileName, newFileName) => {
-    const file = files.value[oldFileName]
-    let fileHandle = files.value[oldFileName].fileHandle
+  const updateFileName = async (updateData) => {
+    const { oldName, newName } = updateData
+    await files.value[oldName].fileHandle.move(newName)
+    // const file = files.value[oldFileName]
+    // let fileHandle = files.value[oldFileName].fileHandle
     
-    await files.value[oldFileName].fileHandle.move(newFileName)
 
-    renameFile(fileHandle, newFileName)
+    // renameFile(fileHandle, newFileName)
 
-    files.value[newFileName] = file
-    files.value[newFileName].fileName = newFileName
+    files.value[newName] = files.value[oldName]
+    files.value[newName].fileName = newName
 
-    currentFileName.value = newFileName
+    currentFileName.value = newName
 
-    delete files.value[oldFileName]
+    delete files.value[oldName]
   }
 
   const readFolder = async () => {
@@ -115,31 +112,17 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     // find index file and separate it from the rest if exists, otherwise return null
     index.value = result['index.yaml'] ? result['index.yaml'] : null
 
-    // set indexData file data
-    // const indexFileStore = useIndexFileStore();
-    // indexFileStore.setFileData(result["index.yaml"]);
-
     //delete index file from result
     if (index.value) delete result['index.yaml']
 
     // set files
     files.value = result
 
-    // create list of files names
-    // for (const key in files.value) {
-    //   filesNamesList.value.push(key);
-    // }
-
-    // set current file name
+    // set first file in list as current file name
     currentFileName.value = filesNamesList.value[0]
-    // const currentFileStore = useCurrentFileStore();
-    // currentFileStore.setFileData(result[currentFileName.value]);
 
-    // transform fileData object to array
-
+    // transform fileData object to array and change structure of field object from {key: value} to {key: key, items: value} like in index file
     for (const key in result) {
-      // eslint-disable-next-line no-debugger
-      // debugger;
       files.value[key].fileData.fields = objectToArray(result[key].fileData.fields)
     }
 
@@ -173,6 +156,6 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     readFolder,
     readingFileData,
     verifyPermission,
-    updateFileName
+    updateFileName,
   }
 })
