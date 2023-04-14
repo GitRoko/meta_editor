@@ -2,116 +2,146 @@
 // // Using Vue Test Utils in Vitest (need use happy-dom)!!!
 // // https://www.youtube.com/watch?v=iNl6TA29hBM
 
-import { defineStore } from "pinia";
-import { accessFolder, readDirectory, readFile } from "@/plugins/fileSystemAccessApi";
-import Yaml from "yaml";
-import { useCurrentFileStore } from "@/stores/currentFile";
-import { useIndexFileStore } from "@/stores/indexFile";
-import { ref, computed } from "vue";
+import { defineStore } from 'pinia'
+import { accessFolder, readDirectory, readFile } from '@/plugins/fileSystemAccessApi'
+import Yaml from 'yaml'
+import { ref, computed } from 'vue'
+import { objectToArray } from '@/plugins/utils'
 
-export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
-  const files = ref(null);
-  const index = ref(null);
-  const directoryHandle = ref(null);
-  const isLoad = ref(false);
-  const currentFileName = ref("");
-  const filesNamesList = ref([]);
+export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
+  const files = ref(null)
+  const index = ref(null)
+  const directoryHandle = ref(null)
+  const isLoad = ref(false)
+  const currentFileName = ref('')
+
+  function $reset() {
+    files.value = null
+    index.value = null
+    directoryHandle.value = null
+    isLoad.value = false
+    currentFileName.value = ''
+  }
 
   const getFiles = () => {
-    return files;
-  };
+    return files
+  }
   const getIndex = () => {
-    return index;
-  };
+    return index
+  }
   const getDirectoryHandle = () => {
-    return directoryHandle;
-  };
+    return directoryHandle
+  }
 
   const getCurrentFileData = computed(() => {
-    return files.value[currentFileName.value];
-  });
+    if (files.value) {
+      // let currentFileKey = Object.keys(files.value).find((key) => key === currentFileName.value)
+
+      // console.log(currentFileKey)
+      return files.value[currentFileName.value]
+
+      // return files.value[currentFileName.value];
+    }
+    return null
+  })
+  const filesNamesList = computed(() => {
+    if (files.value) {
+      return Object.keys(files.value).map((key) => files.value[key].fileName)
+    }
+    return null
+  })
 
   const accessingFolder = async () => {
-    let result = await accessFolder();
+    let result = await accessFolder()
     if (result) {
-      directoryHandle.value = result;
-      await readFolder();
+      directoryHandle.value = result
+      await readFolder()
     } else {
-      throw new Error("You must give permission to folder access");
+      throw new Error('You must give permission to folder access')
     }
-  };
+  }
+
+  const updateFileName = async (updateData) => {
+    const { oldName, newName } = updateData
+    await files.value[oldName].fileHandle.move(newName)
+    // const file = files.value[oldFileName]
+    // let fileHandle = files.value[oldFileName].fileHandle
+    
+
+    // renameFile(fileHandle, newFileName)
+
+    files.value[newName] = files.value[oldName]
+    files.value[newName].fileName = newName
+
+    currentFileName.value = newName
+
+    delete files.value[oldName]
+  }
 
   const readFolder = async () => {
-    let directoryEntries = [];
-    let result = {};
+    let directoryEntries = []
+    let result = {}
 
     if (directoryHandle.value) {
-      directoryEntries = await readDirectory(directoryHandle.value);
+      directoryEntries = await readDirectory(directoryHandle.value)
     } else {
-      await accessingFolder();
+      await accessingFolder()
     }
-    
+
     for await (const entry of directoryEntries) {
       result[entry.fileName] = {
         fileData: await readingFileData(entry.fileHandle),
         fileHandle: entry.fileHandle,
-        fileName: entry.fileName,
-      };
-      let parsedData = null;
+        fileName: entry.fileName
+      }
+
+      let parsedData = null
       try {
-        parsedData = Yaml.parse(result[entry.fileName].fileData);
+        parsedData = Yaml.parse(result[entry.fileName].fileData)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
 
       if (parsedData) {
-        result[entry.fileName].fileData = parsedData;
+        result[entry.fileName].fileData = parsedData
       } else {
-        throw new Error(
-          `Can't parse file "${entry.fileName}", wrong YAML format or data.`
-        );
+        throw new Error(`Can't parse file "${entry.fileName}", wrong YAML format or data.`)
       }
     }
 
     // find index file and separate it from the rest if exists, otherwise return null
-    index.value = result["index.yaml"] ? result["index.yaml"] : null;
-
-    // set indexData file data
-    const indexFileStore = useIndexFileStore();
-    indexFileStore.setFileData(result["index.yaml"]);
+    index.value = result['index.yaml'] ? result['index.yaml'] : null
 
     //delete index file from result
-    if (index.value) delete result["index.yaml"];
+    if (index.value) delete result['index.yaml']
 
     // set files
-    files.value = result;
+    files.value = result
 
-    // create list of files names
-    for (const key in files.value) {
-      filesNamesList.value.push(key);
+    // set first file in list as current file name
+    currentFileName.value = filesNamesList.value[0]
+
+    // transform fileData object to array and change structure of field object from {key: value} to {key: key, items: value} like in index file
+    for (const key in result) {
+      files.value[key].fileData.fields = objectToArray(result[key].fileData.fields)
     }
 
-    // set current file name
-    currentFileName.value = filesNamesList.value[0];
-    const currentFileStore = useCurrentFileStore();
-    currentFileStore.setFileData(result[currentFileName.value]);
-    
-
     // set isLoad
-    isLoad.value = files.value ? true : false;
-  };
+    isLoad.value = files.value ? true : false
+  }
 
   const readingFileData = async (fileHandle) => {
-    const result = await readFile(fileHandle);
-    return result;
-  };
+    const result = await readFile(fileHandle)
+    return result
+  }
 
   const verifyPermission = async (fileHandle, writable) => {
-    const result = await fileHandle.queryPermission({ writable });
-    return result;
-  };
+    const result = await fileHandle.queryPermission({ writable })
+    return result
+  }
 
   return {
+    $reset,
     files,
     index,
     directoryHandle,
@@ -126,5 +156,6 @@ export const useMetaDirectoryStore = defineStore("metaDirectory", () => {
     readFolder,
     readingFileData,
     verifyPermission,
-  };
-});
+    updateFileName,
+  }
+})

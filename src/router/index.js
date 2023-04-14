@@ -1,28 +1,29 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import HomeView from "@/views/HomeView.vue";
+import IndexView from "@/views/IndexView.vue";
+import FileView from "@/views/FileView.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
+
 
 const routes = [
   { path: "/", 
     name: "Home", 
-    component: () => import("@/views/HomeView.vue") },
-  // {
-  //   path: "/currentFile",
-  //   name: "CurrentFile",
-  //   component: () => import("@/views/CurrentFile.vue"),
-  // },
+    component: HomeView,
+  },
   {
     path: "/index",
     name: "Index",
-    component: () => import("@/views/IndexView.vue"),
+    component: IndexView,
   },
   {
     path: "/files/:fileName",
     name: "File",
-    component: () => import("@/views/FileView.vue"),
+    component: FileView,
   },
   {
-    path: "/:catchAll(.*)",
+    path: "/files/:pathMatch(.*)*",
     name: "PageNotFound",
-    component: () => import("@/views/PageNotFound.vue"),
+    component: PageNotFound,
   },
 ];
 const router = createRouter({

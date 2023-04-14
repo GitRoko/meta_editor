@@ -16,8 +16,7 @@ describe('Data Store Test', () => {
   })
 
   it('initializes with correct values', () => { 
-    expect(store.getFiles).toBe(null)
-    expect(store.getDirectoryHandle).toBe(null)
+    expect(store.files).toBe(null)
    })
   // it('test adding a directoryHandle', () => { 
   //   store.accessingFolder()

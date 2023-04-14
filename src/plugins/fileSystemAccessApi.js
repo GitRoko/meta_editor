@@ -57,3 +57,7 @@ export async function readFile(handle = false) {
 
   return contents;
 }
+
+export async function renameFile(fileHandle, newName) {
+  await fileHandle.move(newName);
+}
