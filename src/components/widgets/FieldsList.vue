@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { watch, onBeforeMount, computed, ref, onUpdated } from 'vue'
+import { watch, onBeforeMount, computed, ref } from 'vue'
 import { getDefaultField } from '@/plugins/utils.js'
 import DictWidget from '@/components/widgets/DictWidget.vue'
 
@@ -38,9 +38,7 @@ const emits = defineEmits([
   'update:modelValue'
 ])
 
-onUpdated(() => {
-  console.log('onUpdated fieldsList', fieldsList.value)
-})
+
 
 const widgetMap = {
   dict: DictWidget
@@ -54,16 +52,16 @@ const fieldsKeys = computed(() => {
 
 const fieldsList = ref([])
 
+onBeforeMount(() => {
+  fieldsList.value = [...props.modelValue]
+})
+
 watch(
   () => props.modelValue,
   (newVal) => {
     fieldsList.value = [...newVal]
   }
 )
-
-onBeforeMount(() => {
-  fieldsList.value = [...props.modelValue]
-})
 
 const deleteField = (index) => {
   fieldsList.value.splice(index, 1)

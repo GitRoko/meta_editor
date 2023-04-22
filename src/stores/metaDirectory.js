@@ -9,7 +9,9 @@ import { ref, computed } from 'vue'
 import { objectToArray } from '@/plugins/utils'
 
 export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
+  // files object structure
   const files = ref(null)
+  // index file object structure
   const index = ref(null)
   const directoryHandle = ref(null)
   const isLoad = ref(false)
@@ -35,12 +37,7 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
 
   const getCurrentFileData = computed(() => {
     if (files.value) {
-      // let currentFileKey = Object.keys(files.value).find((key) => key === currentFileName.value)
-
-      // console.log(currentFileKey)
       return files.value[currentFileName.value]
-
-      // return files.value[currentFileName.value];
     }
     return null
   })
@@ -64,11 +61,6 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
   const updateFileName = async (updateData) => {
     const { oldName, newName } = updateData
     await files.value[oldName].fileHandle.move(newName)
-    // const file = files.value[oldFileName]
-    // let fileHandle = files.value[oldFileName].fileHandle
-    
-
-    // renameFile(fileHandle, newFileName)
 
     files.value[newName] = files.value[oldName]
     files.value[newName].fileName = newName

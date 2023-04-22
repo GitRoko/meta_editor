@@ -1,4 +1,5 @@
 <template>
+
   <v-card-item class="px-2 py-0 ma-0">
     <template v-slot:prepend>
       <component
@@ -11,7 +12,6 @@
         class="field-width"
       ></component>
     </template>
-
     <template v-if="dict.key !== 'generator'" v-slot:append>
       <FieldMenu
         @addFieldBefore="$emit('addFieldBefore')"
@@ -47,16 +47,14 @@
           <v-expand-transition>
             <div v-show="show">
               <v-divider></v-divider>
-
               <component
                 :is="widgetMap[renderData.items[key].widget]"
                 :renderData="renderData.items[key]"
                 :modelValue="dictGenerator"
-                @update:modelValue="
-                  ($event) => changeDictItems({ itemsKey: key, newValue: $event })
-                "
-                @changeDictItems="($event) => changeDictItems($event)"
+                @update:modelValue="changeDictItems({ itemsKey: key, newValue: $event })"
+                @changeDictItems="changeDictItems"
               ></component>
+              <!-- @changeDictItems="($event) => changeDictItems($event)" -->
         <!--  @update:modelValue= for local change emit -->
         <!--  @changeDictItems= emit from recursive to parent  -->
             </div>
@@ -95,7 +93,7 @@ const emit = defineEmits([
   'addFieldAfter',
   'deleteField',
   'changeDictItems',
-  'changeDictGenerator',
+  // 'changeDictGenerator',
   'update:modelValue'
 ])
 
@@ -106,6 +104,7 @@ const widgetMap = {
   checkbox: WidgetCheckbox,
   hardcode: HardcodeWidget
 }
+
 const show = ref(false)
 
 const dict = computed(() => props.modelValue)
