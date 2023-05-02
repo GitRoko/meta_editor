@@ -1,18 +1,17 @@
 <template>
-
-  <v-card-item class="px-2 py-0 ma-0">
+  <v-card-item class="px-2 pt-2 ma-0">
     <template v-slot:prepend>
       <component
         :is="widgetMap[renderData.key.widget]"
         :renderData="renderData.key"
         :keyItem="'key'"
-        :modelValue="dict.key"
-        @update:modelValue="($event) => changeDictKey($event)"
+        :modelValue="dictType === 'generator' ? dictType : dict.name"
+        @update:modelValue="($event) => changeDictItems({ itemsKey: 'name', newValue: $event })"
         :fieldsKeys="fieldsKeys"
         class="field-width"
       ></component>
     </template>
-    <template v-if="dict.key !== 'generator'" v-slot:append>
+    <template v-if="dictType !== 'generator'" v-slot:append>
       <FieldMenu
         @addFieldBefore="$emit('addFieldBefore')"
         @addFieldAfter="$emit('addFieldAfter')"
@@ -29,34 +28,32 @@
 
   <v-container>
     <v-row dense>
-      <template v-for="(value, key, i) in dict.items" :key="i">
-        <v-col v-if="renderData.items[key] !== undefined && dict.items[key] !== undefined" cols="4">
+      <template v-for="(value, key, i) in dict" :key="i">
+        <v-col v-if="renderDataItem[key] !== undefined && dict[key] !== undefined" cols="4">
           <component
             v-if="key !== 'generator'"
-            :is="widgetMap[renderData.items[key].widget]"
-            :renderData="renderData.items[key]"
+            :is="widgetMap[renderDataItem[key].widget]"
+            :renderData="renderDataItem[key]"
             :keyItem="key"
-            :fieldType="dict.items.js_type"
-            :modelValue="value"
+            :fieldType="dict.js_type"
+            :modelValue="dict[key]"
             :mappingData="getMappingType(key)"
             @update:modelValue="($event) => changeDictItems({ itemsKey: key, newValue: $event })"
-          ></component>
+            ></component>
         </v-col>
-        <!--  if key === 'generator' then show generator(recursive DictWidget) -->
         <v-col cols="12" v-if="key === 'generator'">
           <v-expand-transition>
             <div v-show="show">
               <v-divider></v-divider>
+              
               <component
-                :is="widgetMap[renderData.items[key].widget]"
-                :renderData="renderData.items[key]"
-                :modelValue="dictGenerator"
+                :is="widgetMap[renderDataItem[key].widget]"
+                :renderData="renderDataItem[key]"
+                :modelValue="dict.generator"
                 @update:modelValue="changeDictItems({ itemsKey: key, newValue: $event })"
                 @changeDictItems="changeDictItems"
               ></component>
-              <!-- @changeDictItems="($event) => changeDictItems($event)" -->
-        <!--  @update:modelValue= for local change emit -->
-        <!--  @changeDictItems= emit from recursive to parent  -->
+             
             </div>
           </v-expand-transition>
         </v-col>
@@ -85,7 +82,8 @@ const props = defineProps({
   fieldsKeys: {
     type: Array,
     default: () => []
-  }
+  },
+
 })
 
 const emit = defineEmits([
@@ -106,26 +104,40 @@ const widgetMap = {
 }
 
 const show = ref(false)
+// repeat reactive logic like parent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const dict = computed(() => props.modelValue)
-
-const dictGenerator = computed(() => {
-  if (dict.value.items.generator) {
-    return {
-      key: 'generator',
-      items: { ...props.modelValue.items.generator }
-    }
-  }
-  return null
+const dictType = computed(() => props.renderData.name)
+const renderDataItem = computed(() => {
+  const newItem = {}
+  props.renderData.items.forEach((item) => {
+    newItem[item.name] = item
+  })
+  return newItem
 })
+// watch(() => props.modelValue,
+// (newVal) => {
+//   dict.value = {...newVal}
+// })
 
-const changeDictKey = (newKey) => {
-  dict.value.key = newKey
-}
+// const dictGenerator = computed(() => {
+//   if (dict.value.items.generator) {
+//     return {
+//       key: 'generator',
+//       items: { ...props.modelValue.items.generator }
+//     }
+//   }
+//   return null
+// })
+
+// const changeDictKey = (newKey) => {
+//   dict.value.name = newKey
+// }
 
 const changeDictItems = (updateData) => {
   const { itemsKey, newValue } = updateData
-  if (dict.value.key === 'generator') {
+  console.log('changeDictItems', itemsKey, newValue);
+  if (dictType.value === 'generator') {
     // generator change
     if (itemsKey === 'type') {
       const newData = { itemsKey: 'generator', newValue: getDefaultGenerator(newValue) }
@@ -133,21 +145,22 @@ const changeDictItems = (updateData) => {
       emit('changeDictItems', newData)
     } else {
       // local
-      dict.value.items[itemsKey] = newValue
-      const newData = { itemsKey: 'generator', newValue: dict.value.items }
+      dict.value[itemsKey] = newValue
+      const newData = { itemsKey: 'generator', newValue: dict.value }
       // to parent
       emit('changeDictItems', newData)
     }
-  } else {
-    // local
-    dict.value.items[itemsKey] = newValue
+  }
+  if(dictType.value === 'field') {
+    // field change
+    dict.value[itemsKey] = newValue
   }
 }
 
 const getMappingType = (key) => {
-  if (props.renderData.items[key].mapping) {
-    const mappingKey = Object.keys(props.renderData.items[key].mapping)[0]
-    const mappingValue = dict.value.items[mappingKey]
+  if (renderDataItem.value[key].mapping) {
+    const mappingKey = Object.keys(renderDataItem.value[key].mapping)[0]
+    const mappingValue = dict.value[mappingKey]
 
     return { key: mappingKey, value: mappingValue }
   }

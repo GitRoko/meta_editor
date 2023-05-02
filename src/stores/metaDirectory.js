@@ -35,15 +35,15 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     return directoryHandle
   }
 
-  const getCurrentFileData = computed(() => {
+  const getCurrentFile = computed(() => {
     if (files.value) {
-      return files.value[currentFileName.value]
+      return files.value.find(file => file.fileName === currentFileName.value)
     }
     return null
   })
   const filesNamesList = computed(() => {
     if (files.value) {
-      return Object.keys(files.value).map((key) => files.value[key].fileName)
+      return files.value.map((file) => file.fileName)
     }
     return null
   })
@@ -58,21 +58,15 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     }
   }
 
-  const updateFileName = async (updateData) => {
-    const { oldName, newName } = updateData
-    await files.value[oldName].fileHandle.move(newName)
-
-    files.value[newName] = files.value[oldName]
-    files.value[newName].fileName = newName
-
+  const updateFileName = async (newName) => {
+    await getCurrentFile.value.fileHandle.move(newName)
+    getCurrentFile.value.fileName = newName
     currentFileName.value = newName
-
-    delete files.value[oldName]
   }
 
   const readFolder = async () => {
     let directoryEntries = []
-    let result = {}
+    let result = []
 
     if (directoryHandle.value) {
       directoryEntries = await readDirectory(directoryHandle.value)
@@ -81,31 +75,33 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     }
 
     for await (const entry of directoryEntries) {
-      result[entry.fileName] = {
-        fileData: await readingFileData(entry.fileHandle),
+      let file = {
         fileHandle: entry.fileHandle,
         fileName: entry.fileName
       }
+      let fileData = await readingFileData(entry.fileHandle)
 
       let parsedData = null
       try {
-        parsedData = Yaml.parse(result[entry.fileName].fileData)
+        parsedData = Yaml.parse(fileData)
       } catch (e) {
         console.error(e)
       }
 
       if (parsedData) {
-        result[entry.fileName].fileData = parsedData
+        file.fileData = parsedData
+        result.push(file)
       } else {
         throw new Error(`Can't parse file "${entry.fileName}", wrong YAML format or data.`)
       }
     }
 
     // find index file and separate it from the rest if exists, otherwise return null
-    index.value = result['index.yaml'] ? result['index.yaml'] : null
+    const indexFileIndex = result.findIndex(file => file.fileName === 'index.yaml')
+    index.value = result.splice(indexFileIndex, 1)[0]
 
     //delete index file from result
-    if (index.value) delete result['index.yaml']
+    // if (index.value) delete result['index.yaml']
 
     // set files
     files.value = result
@@ -143,7 +139,7 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     getFiles,
     getIndex,
     getDirectoryHandle,
-    getCurrentFileData,
+    getCurrentFile,
     accessingFolder,
     readFolder,
     readingFileData,

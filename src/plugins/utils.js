@@ -1,6 +1,7 @@
 export const objectToArray = (obj) => {
   return Object.entries(obj).map(([key, items]) => {
-    return {key, items};
+    return {name: key, ...items};
+    // return {key, items};
   });
 }
 
@@ -32,8 +33,7 @@ export const getDefaultGenerator = (type) => {
 
 export const getDefaultField = () => {
   return {
-    key: 'defaultField',
-    items: {
+      name: 'defaultName',
       js_type: 'string',
       optional: true,
       db_type: 'varchar',
@@ -41,6 +41,81 @@ export const getDefaultField = () => {
       generator: {
         type: 'zip'
       }
-    }
   };
+}
+
+export const newWidgetType = (type) => {
+  switch (type) {
+    case 'text':
+      return {
+        name: 'text_field',
+        widget: 'text',
+        validation: {
+          regexp: '.*',
+          unique: false
+        }
+      }
+    case 'enum':
+      return {
+        name: 'enum_field',
+        widget: 'enum',
+        values: ['string', 'number', 'object', 'array', 'boolean']
+      }
+    case 'dict':
+      return {
+        name: 'dict_field',
+        widget: 'dict',
+        key: {
+          widget: 'text',
+          validation: {
+            regexp: '^[a-zA-Z0-9_]+$',
+            unique: true
+          }
+        },
+        items: [
+          {
+            name: 'text_field',
+            widget: 'text',
+            validation: {
+              regexp: '.*',
+              unique: false
+            }
+          }
+        ]
+      }
+    case 'list':
+      return {
+        name: 'list_field',
+        widget: 'list',
+        items: [
+          {
+            name: 'text_field',
+            widget: 'text',
+            validation: {
+              regexp: '.*',
+              unique: false
+            }
+          }
+        ]
+      }
+    case 'checkbox':
+      return {
+        name: 'checkbox_field',
+        widget: 'checkbox'
+      }
+    case 'hardcode':
+      return {
+        
+        widget: 'hardcode'
+      }
+    case 'filename':
+      return {
+        name: 'filename_field',
+        widget: 'filename',
+        validation: {
+          regexp: '^[a-zA-Z0-9_]+\\.yaml$',
+          unique: true
+        }
+      }
+  }
 }

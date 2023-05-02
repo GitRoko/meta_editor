@@ -1,39 +1,76 @@
 <template>
-  <div>
-    <!-- <v-divider></v-divider> -->
-    <v-card-subtitle class="ml-5">Structure of module</v-card-subtitle>
-    <v-card-item v-for="(dataItem, i) in dataList" :key="i" class="ma-0 pa-0">
-  
+  <v-card density="compact" class="ma-0 pa-0">
+    <v-card-subtitle class="ma-0 pa-0">Items</v-card-subtitle>
+    <v-card-item v-for="(dataItem, i) in itemData.items" :key="i" class="ma-0 pa-0">
+      <!-- <DataItemWidget
+    :modelValue="dataItem"
+      @update:modelValue="itemData.items[i] = $event"
+      @removeItem="removeItem(i)"
+      @addItemAfter="addItemAfter(i)"
+      @addItemBefore="addItemBefore(i)"
+      @changeItemType="changeItemType($event, i)"
+    /> -->
       <DataItemWidget
         :modelValue="dataItem"
         :fieldsNamesList="fieldsNamesList"
-        @update:modelValue="dataList[i] = $event"
+        :posibleFieldsForMapping="posibleFieldsForMapping"
+        @update:modelValue="itemData.items[i] = $event"
         @removeItem="removeItem(i)"
         @addItemAfter="addItemAfter(i)"
         @addItemBefore="addItemBefore(i)"
         @changeItemType="changeItemType($event, i)"
       />
     </v-card-item>
-  </div>
+  </v-card>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { newWidgetType } from '@/plugins/utils.js'
 import DataItemWidget from '@/components/indexFile/DataItemWidget.vue'
+
 const props = defineProps({
   modelValue: {
     type: Object
   }
 })
-defineEmits(['update:modelValue'])
-const dataList = computed(() => {
+const itemData = computed(() => {
   return props.modelValue
-  // return transformDictToArray(props.modelValue)
 })
+
 const fieldsNamesList = computed(() => {
-  return dataList.value.map((item) => item.name) || []
+  return itemData.value.items.map((item) => item.name) || []
 })
+
+const posibleFieldsForMapping = computed(() => {
+  return itemData.value.items.filter((item) => {
+    if (item.widget === 'enum' && item.values !== undefined) {
+      return item
+    }
+  })
+})
+
+const removeItem = (index) => {
+  itemData.value.items.splice(index, 1)
+  // const newDataList = transformArrayToDict(itemData.value.items)
+  // console.log('newDataList', newDataList)
+  // emit('update:modelValue', newDataList)
+}
+const addItemBefore = (index) => {
+  itemData.value.items.splice(index, 0, newWidgetType('text'))
+  // const newDataList = transformArrayToDict(itemData.value.items)
+  // console.log('newDataList', newDataList)
+  // emit('update:modelValue', newDataList)
+}
+
+const addItemAfter = (index) => {
+  itemData.value.items.splice(index + 1, 0, newWidgetType('text'))
+}
+const changeItemType = (type, index) => {
+  console.log('changeItemType', type, index)
+  itemData.value.items.splice(index, 1, newWidgetType(type))
+}
+
 // const newWidgetType = (type) => {
 //   switch (type) {
 //     case 'text':
@@ -104,29 +141,4 @@ const fieldsNamesList = computed(() => {
 //       }
 //   }
 // }
-const changeItemType = (type, index) => {
-  console.log('changeItemType', type, index)
-  dataList.value.splice(index, 1, newWidgetType(type))
-}
-const removeItem = (index) => {
-  dataList.value.splice(index, 1)
-  // const newDataList = transformArrayToDict(dataList.value)
-  // console.log('newDataList', newDataList)
-  // emit('update:modelValue', newDataList)
-}
-const addItemBefore = (index) => {
-  dataList.value.splice(index, 0, newWidgetType( 'text'))
-  // const newDataList = transformArrayToDict(dataList.value)
-  // console.log('newDataList', newDataList)
-  // emit('update:modelValue', newDataList)
-}
-
-const addItemAfter = (index) => {
-  dataList.value.splice(index + 1, 0, newWidgetType( 'text'))
-
-  // const newDataList = transformArrayToDict(dataList.value)
-  // console.log('newDataList', newDataList)
-  // emit('update:modelValue', newDataList)
-}
-
 </script>

@@ -53,7 +53,7 @@ const updateFileName = (newValue) => {
   fileName.value = newValue
 
   if (errorMessages.value.length === 0 && newValue !== props.intialFileName) {
-    emit('update:fileName', { oldName: props.intialFileName, newName: newValue })
+    emit('update:fileName', newValue )
   }
 }
 

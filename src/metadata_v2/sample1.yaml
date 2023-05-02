@@ -1,6 +1,6 @@
 version: 1 # change version when file is changed
-description: Sample consumer collected by the abracadabra.
-group: Abracadabra
+description: Sample_1 consumer collected by the abracadabra.
+group: Sample
 fields:
   id:
     js_type: number    

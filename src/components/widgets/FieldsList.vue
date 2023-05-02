@@ -1,8 +1,8 @@
 <template>
   <v-card v-for="(item, i) in fieldsList" :key="i" class="my-2 pa-2">
     <component
-      :is="widgetMap[renderData.items[0].field.widget]"
-      :renderData="renderData.items[0].field"
+      :is="widgetMap[renderData.items[0].widget]"
+      :renderData="renderData.items[0]"
       :fieldsKeys="fieldsKeys"
       :modelValue="item"
       @addFieldBefore="addFieldBefore(i)"
@@ -29,7 +29,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits([
+const emit = defineEmits([
   'addFieldBefore',
   'addFieldAfter',
   'deleteField',
@@ -46,7 +46,7 @@ const widgetMap = {
 
 const fieldsKeys = computed(() => {
   return fieldsList.value.map((item) => {
-    return item.key
+    return item.name
   })
 })
 
@@ -65,16 +65,16 @@ watch(
 
 const deleteField = (index) => {
   fieldsList.value.splice(index, 1)
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 
 const addFieldBefore = (index) => {
   fieldsList.value.splice(index, 0, getDefaultField())
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 
 const addFieldAfter = (index) => {
   fieldsList.value.splice(index + 1, 0, getDefaultField())
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 </script>

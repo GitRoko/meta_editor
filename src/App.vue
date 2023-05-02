@@ -21,8 +21,8 @@
       >
         <v-list>
           <v-list-item v-if="$route.params.fileName" title="Fields">
-            <pre v-if="getCurrentFileData">
-              {{ getCurrentFileData.fileData.fields }}
+            <pre v-if="getCurrentFile">
+              {{ getCurrentFile.fileData.fields }}
             </pre>
           </v-list-item>
           <v-list-item v-else-if="index" title="Fields">
@@ -49,7 +49,7 @@ import { useRouter } from 'vue-router'
 import FilesListMenu from '@/components/FilesListMenu.vue'
 
 const drawer = ref(null)
-const { isLoad, currentFileName, getCurrentFileData, index } = storeToRefs(useMetaDirectoryStore())
+const { isLoad, currentFileName, getCurrentFile, index } = storeToRefs(useMetaDirectoryStore())
 const router = useRouter()
 
 watch(isLoad, () => {
