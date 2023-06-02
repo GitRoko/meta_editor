@@ -78,11 +78,8 @@
       </v-col>
     </v-row>
   </v-container>
-
-  <!-- <div v-for="(item, i) in enumForMapping" :key="i">
-    enumForMapping {{ item }}
-  </div> -->
 </template>
+
 <script setup>
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import EnumValuesCard from '@/components/indexFile/EnumValuesCard.vue'
@@ -100,7 +97,6 @@ const props = defineProps({
 const localValues = ref([])
 const localMapping = ref({})
 const selectedEnumName = ref('')
-// const posibleEnumNames = ref([])
 const withMapping = ref(null)
 const enumData = computed(() => props.modelValue)
 const posibleEnumNames = computed(() => {
@@ -163,41 +159,4 @@ const newMapping = () => {
   return mapping
 }
 
-// const enumForMapping = computed(() => {
-//   return props.posibleFieldsForMapping.filter(item => item.name !== props.modelValue.name)
-// })
-
-// const enumValuesForMapping = computed(() => {
-//   return props.posibleFieldsForMapping.find(item => item.name === selectedEnumName.value)
-// })
-
-// const selectedEnumValues = computed(() => {
-//   return enumForMapping.value.map(item => item.name)
-// })
-
-// watch(() => selectedEnumName.value, (newValue) => {
-//   // console.log(newValue, oldValue)
-//   if (newValue !== '') {
-//     mapping.value = {
-//       [selectedEnumName.value]: (() => {
-//         const result = {}
-
-//         enumValuesForMapping.value.values.forEach(item => {
-//             result[item] =  ['']
-//         })
-//         return result
-//       })()
-//     }
-//     console.log(mapping);
-//   }
-// })
-
-// onBeforeMount(() => {
-//   withMapping.value = props.modelValue.mapping === undefined ? false : true
-//   if (props.modelValue.mapping !== undefined) {
-//     selectedEnumName.value = selectedEnumValues.value[0]
-//   } else {
-//     localValues.value = props.modelValue.values
-//   }
-// })
 </script>

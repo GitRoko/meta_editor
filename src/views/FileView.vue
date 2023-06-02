@@ -5,8 +5,6 @@
         version: {{ getCurrentFile.fileData.version }}
       </v-col>
       <v-col class="mt-2" cols="12">
-        <!-- <pre>getCurrentFile: {{ getCurrentFile }}</pre> -->
-        <!-- <pre>renderData: {{ renderData }}</pre> -->
         <div v-for="(renderDataItem, i) in renderData" :key="i">
           <div v-if="renderDataItem.name === 'name'" class="my-2 px-2">
             <component

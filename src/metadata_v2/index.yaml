@@ -59,7 +59,7 @@ module: # module is core, but we can have few more entities # type Array
                 validation: 
                   regexp: '.*'
                   unique: false 
-              - name: 'generator' 
+              - name: 'generator'
                 widget: dict # there is a object of other widgets
                 key: # define key name rule
                   widget: hardcode # use "generator" value if widget is hardcode
