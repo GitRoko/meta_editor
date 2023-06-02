@@ -1,0 +1,457 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "js_type": {
+      "type": "string",
+      "enum": [
+        "string",
+        "array",
+        "boolean",
+        "object",
+        "number"
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "js_type": {
+      "oneOf": [
+        {
+          "properties": {
+            "js_type": {
+              "enum": [
+                "string"
+              ]
+            },
+            "generator": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "sample",
+                    "code",
+                    "date",
+                    "foreign",
+                    "enum",
+                    "zip",
+                    "ip",
+                    "phone",
+                    "uuid"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "dependencies": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "sample"
+                          ]
+                        },
+                        "sample": {
+                          "type": "string",
+                          "enum": [
+                            "name",
+                            "cities"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "sample"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "code"
+                          ]
+                        },
+                        "upper": {
+                          "type": "boolean"
+                        },
+                        "length": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "upper",
+                        "length"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "date"
+                          ]
+                        },
+                        "format": {
+                          "type": "string"
+                        },
+                        "min_year": {
+                          "type": "number"
+                        },
+                        "max_year": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "min_year",
+                        "max_year"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "foreign"
+                          ]
+                        },
+                        "dataset": {
+                          "type": "string",
+                          "enum": [
+                            "click_open_raw"
+                          ]
+                        },
+                        "field": {
+                          "type": "string",
+                          "enum": [
+                            "delivery_log"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "dataset",
+                        "field"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "enum"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "values"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "zip"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "ip"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "phone"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "uuid"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "integer"
+                          ]
+                        },
+                        "unique": {
+                          "type": "boolean"
+                        },
+                        "to_str": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "unique",
+                        "to_str"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "js_type": {
+              "enum": [
+                "number"
+              ]
+            },
+            "generator": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "integer",
+                    "enum"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "dependencies": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "integer"
+                          ]
+                        },
+                        "unique": {
+                          "type": "boolean"
+                        },
+                        "to_str": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "unique",
+                        "to_str"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "enum"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "values"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "js_type": {
+              "enum": [
+                "array"
+              ]
+            },
+            "generator": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "array",
+                    "enum"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "dependencies": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "array"
+                          ]
+                        },
+                        "occurrence_min": {
+                          "type": "integer"
+                        },
+                        "occurrence_max": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "occurrence_min",
+                        "occurrence_max"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "enum"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "values"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "js_type": {
+              "enum": [
+                "object"
+              ]
+            },
+            "generator": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "object",
+                    "enum"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "dependencies": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "object"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "enum"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "values"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "js_type": {
+              "enum": [
+                "boolean"
+              ]
+            },
+            "generator": {
+              "properties": {
+                "type": {
+                  "enum": [
+                    "enum"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "dependencies": {
+                "type": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "enum"
+                          ]
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "values"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

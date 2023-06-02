@@ -1,0 +1,156 @@
+version: 1  
+module: 
+  - name: raw datasets 
+    description: just an example for raw dataset structure 
+    data: 
+      - name: 'name'
+        widget: filename 
+        validation: 
+          regexp: '^[a-zA-Z0-9_]+\.yaml$'
+          unique: true
+      - name: 'description' 
+        widget: text  
+        validation: 
+          regexp: '.*'
+          unique: false 
+      - name: 'group'
+        widget: text 
+        validation: 
+          regexp: '.*'
+          unique: false
+      - name: 'fields'
+        widget: list 
+        items: 
+          - name: 'field'
+            widget: dict 
+            key: 
+              widget: text 
+              validation:
+                regexp: '^[a-zA-Z0-9_]+$'
+                unique: true
+            requaired:
+              - 'js_type'
+              - 'optional'
+              - 'db_type'
+              - 'description'
+              - 'generator'
+            items: 
+              - name: 'js_type'
+                widget: enum 
+                values:
+                  - string
+                  - number
+                  - object
+                  - array
+                  - boolean
+              - name: 'optional'
+                widget: checkbox 
+              - name: 'db_type'
+                widget: enum 
+                mapping:
+                  js_type: 
+                    string:
+                      - varchar
+                    number:
+                      - bigint
+                      - double
+                    array:
+                      - varchar
+                    object:
+                      - varchar
+                    boolean:
+                      - varchar
+              - name: 'description'
+                widget: text  
+                validation: 
+                  regexp: '.*'
+                  unique: false 
+              - name: 'generator'
+                widget: dict 
+                key: 
+                  widget: hardcode 
+                requaired:
+                  - type
+                items: 
+                  - name: 'type'
+                    widget: enum 
+                    mapping:
+                      js_type:
+                        string:
+                          - sample
+                          - code
+                          - integer
+                          - enum
+                          - foreign
+                          - zip
+                          - uuid
+                          - phone
+                          - ip
+                        number:
+                          - integer
+                          - enum
+                        array:
+                          - array
+                          - enum
+                        object:
+                          - object
+                          - enum
+                        boolean:
+                          - enum
+                  - name: 'sample'
+                    widget: enum
+                    values:
+                      - addresses
+                      - cities
+                      - emails
+                      - firstnames
+                      - lastnames
+                      - names
+                      - products
+                      - urls
+                      - words
+                    visible:
+                      type: 
+                        - 'sample'
+                  - name: upper
+                    widget: checkbox
+                    visible:
+                      type: 
+                      - 'code'
+                  - name: length
+                    widget: number
+                    visible:
+                      type: 
+                        - 'code'
+                  - name: unique
+                    widget: checkbox
+                    visible:
+                      type: 'integer'
+                  - name: to_str
+                    widget: checkbox
+                    visible:
+                      type: 'integer'
+                  - name: values
+                    widget: list # or hardcodeList
+                    visible:
+                      type: 'enum'
+                  - name: occurrence_min
+                    widget: number
+                    visible:
+                      type: 'array'
+                  - name: occurrence_max
+                    widget: number
+                    visible:
+                      type: 'array'
+                  - name: dataset
+                    widget: table # or hardcodeEnum
+                    visible:
+                      type: 'foreign'
+                  - name: field
+                    widget: table # or hardcodeEnum
+                    visible:
+                      type: 'foreign'
+
+                                      
+
+

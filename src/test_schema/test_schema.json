@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "new_field": {
+      "type": "object",
+      "properties": {
+        "json_type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "integer",
+            "boolean",
+            "array",
+            "object"
+          ]
+        },
+        "mandatory": {
+          "type": "boolean"
+        },
+        "td_type": {
+          "type": "string"
+        },
+        "pydantic_type": {
+          "type": "string"
+        },
+        "example": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "pii": {
+          "type": "boolean"
+        },
+        "faker": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "occurrence_min": {
+              "type": "integer"
+            },
+            "occurrence_max": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "type",
+            "occurrence_min",
+            "occurrence_max"
+          ]
+        }
+      },
+      "required": [
+        "json_type",
+        "mandatory",
+        "td_type",
+        "pydantic_type",
+        "example",
+        "faker",
+        "description",
+        "pii"
+      ]
+    }
+  },
+  "required": [
+    "new_field"
+  ]
+}
