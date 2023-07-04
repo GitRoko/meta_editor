@@ -63,5 +63,6 @@ const updateText = (newValue) => {
     emit('update:modelValue', newValue)
   }
 }
+
 </script>
 <style scoped></style>

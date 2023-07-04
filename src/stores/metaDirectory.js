@@ -109,7 +109,7 @@ export const useMetaDirectoryStore = defineStore('metaDirectory', () => {
     // set first file in list as current file name
     currentFileName.value = filesNamesList.value[0]
 
-    // transform fileData object to array and change structure of field object from {key: value} to {key: key, items: value} like in index file
+    // transform fileData object to array and change structure of field object from { key: {key1: value} } to {name: key, key1: value} like in index file
     for (const key in result) {
       files.value[key].fileData.fields = objectToArray(result[key].fileData.fields)
     }

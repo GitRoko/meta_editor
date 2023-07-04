@@ -6,11 +6,11 @@ export const objectToArray = (obj) => {
 }
 
 export const arrayToObject = (arr) => {
-  const fields = arr;
   const newFields = {};
-  fields.forEach((field) => {
-    const key = Object.keys(field)[0];
-    newFields[key] = field[key];
+  arr.forEach((field) => {
+    const key = field.name;
+    newFields[key] = { ...field }
+    delete newFields[key].name
   });
 
   return newFields;
@@ -105,7 +105,6 @@ export const newWidgetType = (type) => {
       }
     case 'hardcode':
       return {
-        
         widget: 'hardcode'
       }
     case 'filename':
