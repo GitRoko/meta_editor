@@ -1,0 +1,115 @@
+
+string:
+  - type: sample
+    items:
+      - id: sample
+        name: Dataset
+        widget: enum
+        values:
+          - addresses
+          - cities
+          - emails
+          - firstnames
+          - lastnames
+          - names
+          - products
+          - urls
+          - words
+  - type: code
+    items:
+      - id: upper
+        name: Upper-case
+        widget: checkbox
+        default: false
+      - id: length
+        name: Length
+        widget: number
+        default: 16
+  - type: integer
+    items:
+      - id: unique
+        name: Unique value
+        widget: checkbox
+        default: false
+      - id: to_str
+        default: true
+  # - date
+  - type: enum
+    items:
+      - id: values
+        name: Possible values
+        widget: list              # or new widget values
+  - type: foreign
+    items:
+      - id: dataset
+        name: Table
+        type: dropdown         # ???
+        values: tables
+      - id: field
+        name: Field
+        type: dropdown          # ???
+        values: fields
+  - type: zip
+  - type: uuid
+  - type: phone
+  - type: ip
+number:
+  - type: integer
+    items:
+      - id: unique
+        name: Unique value
+        widget: checkbox
+        default: false
+      - id: to_str
+        name: To string
+        widget: checkbox
+        default: false
+  - type: enum
+    items:
+      - id: values
+        name: Possible values
+        widget: list              # or new widget values
+array:
+  - type: array
+    items:
+      - id: occurrence_min
+        name: Minimum items in list
+        widget: number
+        default: 1
+      - id: Maximum items in list
+        name: Length
+        widget: number
+        default: 2
+  - type: enum
+    items:
+      - id: values
+        name: Possible values
+        widget: list
+boolean:
+  - type: enum
+    items:
+      - id: values
+        name: Possible values
+        widget: list              # or new widget values
+object:
+  - type: object
+  - type: enum
+    items:
+      - id: values
+        name: Possible values
+        widget: list              # or new widget values
+
+
+
+######
+
+- name: type 
+  widget: enum
+  mapping: # мапінг ключ лишаємо
+    code: # сюди додаємо значення енума
+    - js_type: string # сюди при якій залежності його показувати
+- name: upper
+  widget: checkbox
+  mapping:
+    type: # тут імовірно краще вказувати не просто тип, а reference, але для простоти залишимо як є.
+    - code # якщо type == 'code', то показуємо чекбокс (це спеціальне правило для цього віджету)

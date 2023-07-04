@@ -16,12 +16,12 @@ const routes = [
     component: IndexView,
   },
   {
-    path: "/files/:fileName",
+    path: "/:fileName",
     name: "File",
     component: FileView,
   },
   {
-    path: "/files/:pathMatch(.*)*",
+    path: "/:catchAll(.*)*",
     name: "PageNotFound",
     component: PageNotFound,
   },

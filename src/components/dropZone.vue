@@ -46,7 +46,7 @@
   </div>
 </template>
 <script>
-import { useMetaDirectoryStore } from "../stores/metaDirectory";
+import { useMetaDirectoryStore } from "@/stores/metaDirectory";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 

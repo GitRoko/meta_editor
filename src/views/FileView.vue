@@ -1,33 +1,27 @@
 <template v-if="currentFileName">
   <v-container class="fill-height" width="1024">
     <v-row dense class="fill-height">
-      <v-col cols="12" class="pr-6 d-flex flex-row-reverse"> version: {{ getCurrentFileData.fileData.version }} </v-col>
+      <v-col cols="12" class="pr-6 d-flex flex-row-reverse" style="font-size: 12px">
+        version: {{ getCurrentFile.fileData.version }}
+      </v-col>
       <v-col class="mt-2" cols="12">
-        <div v-if="renderData['name']" class="px-2">
-          <component
-            :is="FileName"
-            :renderData="renderData['name']"
-            :filesNamesList="filesNamesList"
-            :keyItem="'name'"
-            :intialFileName="getCurrentFileData.fileName"
-            @update:fileName="store.updateFileName"
-          ></component>
-        </div>
-        <div v-for="(value, key, i) in renderData" :key="i">
-          <div v-if="key !== 'name' && key !== 'fields'" class="my-2 px-2">
+        <div v-for="(renderDataItem, i) in renderData" :key="i">
+          <div v-if="renderDataItem.name === 'name'" class="my-2 px-2">
             <component
-              :is="widgetMap[value.widget]"
-              :renderData="value"
-              :keyItem="key"
-              v-model="getCurrentFileData.fileData[key]"
+              :is="widgetMap[renderDataItem.widget]"
+              :renderData="renderDataItem"
+              :filesNamesList="filesNamesList"
+              :intialFileName="getCurrentFile.fileName"
+              :keyItem="renderDataItem.name"
+              @update:fileName="store.updateFileName"
             ></component>
           </div>
-          <div v-if="key === 'fields'" class="">
+          <div v-if="renderDataItem.name !== 'name'" class="my-2 px-2">
             <component
-              :is="widgetMap[value.widget]"
-              :renderData="value"
-              :keyItem="key"
-              v-model="getCurrentFileData.fileData[key]"
+              :is="widgetMap[renderDataItem.widget]"
+              :renderData="renderDataItem"
+              :keyItem="renderDataItem.name"
+              v-model="getCurrentFile.fileData[renderDataItem.name]"
             ></component>
           </div>
         </div>
@@ -48,7 +42,7 @@ import FieldsList from '@/components/widgets/FieldsList.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useMetaDirectoryStore()
-const { currentFileName, getCurrentFileData, isLoad, index, filesNamesList } = storeToRefs(
+const { currentFileName, getCurrentFile, isLoad, index, filesNamesList } = storeToRefs(
   useMetaDirectoryStore()
 )
 const renderData = ref(index.value.fileData.module[0].data)
@@ -64,8 +58,6 @@ watch(
   (fileName) => {
     if (filesNamesList.value.includes(fileName)) {
       currentFileName.value = fileName
-    } else {
-      router.push({name: "PageNotFound"})
     }
   }
 )
@@ -73,8 +65,8 @@ watch(
 watch(
   () => currentFileName.value,
   (fileName) => {
-    if (fileName !== route.params.fileName) {
-      router.push(`/files/${fileName}`)
+    if (fileName !== route.params.fileName && filesNamesList.value.includes(fileName)) {
+      router.push(`/${fileName}`)
     }
   }
 )

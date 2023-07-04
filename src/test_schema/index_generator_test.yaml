@@ -1,0 +1,396 @@
+
+# Є у мене index.yaml, який описує структуру даних та UI для файлу sample.yaml.
+# Наразі такого опису достатньо, але далі структура sample.yaml буде ускладнюватись. Наприклад, потрібно буде вказувати залежності одних полів від значень інших, плюс вкладеність філдів потрібно описати.
+# Наприклад, зараз є 'js_type', це enum (dropdown).
+
+default_field_1:
+    js_type: string    
+    optional: true
+    db_type: varchar
+    description: 'some defaultField'
+    generator:
+      type: sample
+      sample: name
+
+# Також є enum 'db_type', який залежить від значення 'js_type' і описується так:
+
+- name: 'db_type'
+  widget: enum # dropdown/select of mapping
+  mapping:
+    js_type: # name of widget to map
+      string:
+        - varchar
+      number:
+        - bigint
+        - double
+      array:
+        - varchar
+      object:
+        - varchar
+      boolean:
+        - varchar
+
+# Поки все ок, але неясно як описати залежність 'type' від 'js_type' до 'generator', якщо від 'type' залежить структура полів у 'generator', ось правила для 'type' ще можна описати, оскільки це enum ( dropdown):
+
+- name: 'type'
+    widget: enum # dropdown/select of values
+    mapping:
+      js_type: # name of widget to map
+        string:
+          - sample
+          - code
+          - integer
+          - enum
+          - foreign
+          - zip
+          - uuid
+          - date
+          - phone
+          - ip
+        number:
+          - integer
+          - enum
+        array:
+          - array
+          - enum
+        object:
+          - object
+          - enum
+        boolean:
+          - enum
+
+# А як описати структуру 'generator' у таких випадках:
+
+# js_type: string 
+default_field_1:
+  js_type: string    
+  generator:
+    type: sample
+    sample: name # dropdown ['name', 'cities', ...]
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: code
+    upper: false # checkbox
+    length: 16 # input type number
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: date
+    format: "%Y-%m-%d" # input type text
+    min_year: 2018 # input type number
+    max_year: 2022 # input type number
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: foreign
+    dataset: campaign_click_open_raw # enum with files list
+    field: delivery_log #enum with filds of file
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: enum
+    values: ['Possible values'] # widget Values
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: zip
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: ip
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: phone
+
+default_field_1:
+  js_type: string    
+  generator:
+    type: uuid
+
+# js_type: number 
+default_field_1:
+  js_type: number    
+  generator:
+    type: integer
+    unique: false # checkbox
+    to_str: false # checkbox
+default_field_1:
+  js_type: number    
+  generator:
+    type: enum
+    values: [0, 1, 2] 
+    
+# js_type: array 
+default_field_1:
+  js_type: array    
+  generator:
+    type: array
+    occurrence_min: 1 # input type number
+    occurrence_max: 1 # input type number
+    
+default_field_1:
+  js_type: array    
+  generator:
+    type: enum
+    values: [["default_array"], ["default_array"]] # widget Values
+
+# js_type: object 
+default_field_1:
+  js_type: object    
+  generator:
+    type: object
+default_field_1:
+  js_type: object    
+  generator:
+    type: enum
+    values: [{"default":"object"}, {"default":"object"}] # widget Values
+
+# js_type: boolean 
+default_field_1:
+  js_type: boolean    
+  generator:
+    type: enum
+    values: [true, false] # widget Values
+
+
+### index.yaml 
+
+version: 1  # change version when file is changed
+module: # module is core, but we can have few more entities # type Array
+  - name: raw datasets # name of module
+    description: just an example for raw dataset structure # description of module
+    data: # structure of module
+      - name: 'name'
+        widget: filename # help to set up filename, should be mandatory
+        validation: 
+          regexp: '^[a-zA-Z0-9_]+\.yaml$'
+          unique: true
+      - name: 'description' 
+        widget: text  # text input
+        validation: 
+          regexp: '.*'
+          unique: false 
+      - name: 'group'
+        widget: text # text input
+        validation: 
+          regexp: '.*'
+          unique: false
+      - name: 'fields'
+        widget: list # there is an array of another widget
+        items: 
+          - name: 'field'
+            widget: dict # there is a object of other widgets
+            key: # define key name rule
+              widget: text # text input
+              validation:
+                regexp: '^[a-zA-Z0-9_]+$'
+                unique: true
+            mapping:
+              js_type:
+                string:
+                  - 
+            items: # maybe best way use type not Array and set type like type in file - Object
+              - name: 'js_type'
+                widget: enum # dropdown/select of values
+                values:
+                  - string
+                  - number
+                  - object
+                  - array
+                  - boolean
+              - name: 'optional'
+                widget: checkbox # simple boolean checkbox controler
+              - name: 'db_type'
+                widget: enum # dropdown/select of mapping
+                mapping:
+                  js_type: # name of widget to map
+                    string:
+                      - varchar
+                    number:
+                      - bigint
+                      - double
+                    array:
+                      - varchar
+                    object:
+                      - varchar
+                    boolean:
+                      - varchar
+              - name: 'description'
+                widget: text  # text input
+                validation: 
+                  regexp: '.*'
+                  unique: false 
+              - name: 'generator' 
+                widget: dict # there is a object of other widgets
+                key: # define key name rule
+                  widget: hardcode # use "generator" value if widget is hardcode
+                items: 
+                  - name: 'type'
+                    widget: enum # dropdown/select of values
+                    values:
+                      - zip
+                      - sample
+                      - ip
+                  - name: 'sample'
+                    widget: enum # dropdown/select of mapping
+                    mapping:
+                      type: 
+                        sample:
+                          - email
+                          - name
+### end index.yaml
+
+
+### sample.yaml
+
+version: 1 # change version when file is changed
+description: Sample_1 consumer collected by the abracadabra.
+group: Sample
+fields:
+  default_field:
+    js_type: number    
+    optional: false
+    db_type: varchar
+    description: 'some defaultField'
+    generator:
+      type: zip
+  default_field_1:
+    js_type: string    
+    optional: true
+    db_type: varchar
+    description: 'some defaultField'
+    generator:
+      type: sample
+      sample: name
+
+### end sample.yaml
+
+{
+  type: object,
+  widget: dict,
+  items: {
+
+  }
+}
+
+{
+  "schema": {
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "field",
+        "properties": {
+          "js_type": {
+            "type": "string",
+            "title": "JSON type",
+            "enum": [ "string", "number", "object", "array", "boolean" ],
+            "required": true
+          },
+          "db_type": {
+            "type": "string",
+            "title": "Database type",
+            "enum": [ "male", "female", "alien" ]
+          },
+          "age": {
+            "type": "integer",
+            "title": "Age"
+          }
+        }
+      }
+    }
+  }
+}
+
+- name: 'generator'
+  widget: dict 
+  key: 
+    widget: hardcode 
+  # поле render/view/mapping відображає умови за якими поля будуть показуватись в залежності від значення type 
+  render:
+    type:
+      sample:
+        - sample
+      code: 
+        - upper
+        - length
+      integer:
+        - unique
+        - to_str
+      enum:
+        - values
+      foreign:
+        - dataset
+        - field
+      array:
+        - occurrence_min
+        - occurrence_max
+  # requared - поля обов'язкові для рендеру, а рендер іншіх полів регулюється за допомогою поля render
+  requared: ['type'] 
+  items: # всі доступні поля 
+    - name: 'type'
+      widget: enum 
+      mapping:
+        js_type:
+          string:
+            - sample
+            - code
+            - integer
+            - enum
+            - foreign
+            - zip
+            - uuid
+            - phone
+            - ip
+          number:
+            - integer
+            - enum
+          array:
+            - array
+            - enum
+          object:
+            - object
+            - enum
+          boolean:
+            - enum
+    - name: 'sample'
+      widget: enum
+      mapping:
+        type: 
+          sample:
+            - addresses
+            - cities
+            - emails
+            - firstnames
+            - lastnames
+            - names
+            - products
+            - urls
+            - words
+    - name: upper
+      widget: checkbox
+    - name: length
+      widget: number
+    - name: unique
+      widget: checkbox
+    - name: to_str
+      widget: checkbox
+    - name: values
+      widget: list # or hardcodeList
+    - name: occurrence_min
+      widget: number
+    - name: occurrence_max
+      widget: number
+    - name: dataset
+      widget: table # or hardcodeEnum
+    - name: field
+      widget: table # or hardcodeEnum

@@ -1,8 +1,8 @@
 <template>
   <v-card v-for="(item, i) in fieldsList" :key="i" class="my-2 pa-2">
     <component
-      :is="widgetMap[renderData.items[0].field.widget]"
-      :renderData="renderData.items[0].field"
+      :is="widgetMap[renderData.items[0].widget]"
+      :renderData="renderData.items[0]"
       :fieldsKeys="fieldsKeys"
       :modelValue="item"
       @addFieldBefore="addFieldBefore(i)"
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { watch, onBeforeMount, computed, ref, onUpdated } from 'vue'
+import { watch, onBeforeMount, computed, ref } from 'vue'
 import { getDefaultField } from '@/plugins/utils.js'
 import DictWidget from '@/components/widgets/DictWidget.vue'
 
@@ -29,7 +29,7 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits([
+const emit = defineEmits([
   'addFieldBefore',
   'addFieldAfter',
   'deleteField',
@@ -38,9 +38,7 @@ const emits = defineEmits([
   'update:modelValue'
 ])
 
-onUpdated(() => {
-  console.log('onUpdated fieldsList', fieldsList.value)
-})
+
 
 const widgetMap = {
   dict: DictWidget
@@ -48,11 +46,15 @@ const widgetMap = {
 
 const fieldsKeys = computed(() => {
   return fieldsList.value.map((item) => {
-    return item.key
+    return item.name
   })
 })
 
 const fieldsList = ref([])
+
+onBeforeMount(() => {
+  fieldsList.value = [...props.modelValue]
+})
 
 watch(
   () => props.modelValue,
@@ -61,22 +63,18 @@ watch(
   }
 )
 
-onBeforeMount(() => {
-  fieldsList.value = [...props.modelValue]
-})
-
 const deleteField = (index) => {
   fieldsList.value.splice(index, 1)
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 
 const addFieldBefore = (index) => {
   fieldsList.value.splice(index, 0, getDefaultField())
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 
 const addFieldAfter = (index) => {
   fieldsList.value.splice(index + 1, 0, getDefaultField())
-  emits('update:modelValue', fieldsList.value)
+  emit('update:modelValue', fieldsList.value)
 }
 </script>

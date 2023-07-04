@@ -39,3 +39,37 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+### Test mind about Dict widget
+
+Приклад dict widget:
+```yaml
+field:
+  widget: dict
+  key: # ключ об'єкта
+    widget: text # віджет для ключа об'єкта text(editable) або hardcode(uneditable)
+    validation:
+      regexp: '^[a-zA-Z0-9_]+$'
+      unique: true
+  items: # list of items
+    - js_type: 
+```
+Props of dict widget:
+```js
+props = {
+  // дані елемента
+  modelValue: {
+    type: Object,
+    required: true,
+  },
+  // дані батьківського елемента для умов залежності
+  parent: {
+    type: Object,
+    required: true,
+  },
+  // дані для валідації ключа на унікальність
+  parentKeyList: {
+    type: Array,
+    required: true,
+  },
+}
+```

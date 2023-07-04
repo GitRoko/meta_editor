@@ -1,0 +1,82 @@
+version: 1  # change version when file is changed
+module: # module is core, but we can have few more entities # type Array
+  - name: raw datasets # name of module
+    description: just an example for raw dataset structure # description of module
+    data: # structure of module
+      - name: 'name'
+        widget: filename # help to set up filename, should be mandatory
+        validation: 
+          regexp: '^[a-zA-Z0-9_]+\.yaml$'
+          unique: true
+      - name: 'description' 
+        widget: text  # text input
+        validation: 
+          regexp: '.*'
+          unique: false 
+      - name: 'group'
+        widget: text # text input
+        validation: 
+          regexp: '.*'
+          unique: false
+      - name: 'fields'
+        widget: list # there is an array of another widget
+        items: 
+          - name: 'field'
+            widget: dict # there is a object of other widgets
+            key: # define key name rule
+              widget: text # text input
+              validation:
+                regexp: '^[a-zA-Z0-9_]+$'
+                unique: true
+            items: # maybe best way use type not Array and set type like type in file - Object
+              - name: 'js_type'
+                widget: enum # dropdown/select of values
+                values:
+                  - string
+                  - number
+                  - object
+                  - array
+                  - boolean
+              - name: 'optional'
+                widget: checkbox # simple boolean checkbox controler
+              - name: 'db_type'
+                widget: enum # dropdown/select of mapping
+                mapping:
+                  js_type: # name of widget to map
+                    string:
+                      - varchar
+                    number:
+                      - bigint
+                      - double
+                    array:
+                      - varchar
+                    object:
+                      - varchar
+                    boolean:
+                      - varchar
+              - name: 'description'
+                widget: text  # text input
+                validation: 
+                  regexp: '.*'
+                  unique: false 
+              - name: 'generator'
+                widget: dict # there is a object of other widgets
+                key: # define key name rule
+                  widget: hardcode # use "generator" value if widget is hardcode
+                items: 
+                  - name: 'type'
+                    widget: enum # dropdown/select of values
+                    values:
+                      - zip
+                      - sample
+                      - ip
+                  - name: 'sample'
+                    widget: enum # dropdown/select of mapping
+                    mapping:
+                      type: 
+                        sample:
+                          - email
+                          - name
+                        
+
+

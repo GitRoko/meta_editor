@@ -1,0 +1,19 @@
+version: 1 # change version when file is changed
+description: Sample_1 consumer collected by the abracadabra.
+group: Sample
+fields:
+  default_field:
+    js_type: number    
+    optional: false
+    db_type: varchar
+    description: 'some defaultField'
+    generator:
+      type: zip
+  default_field_1:
+    js_type: string    
+    optional: true
+    db_type: varchar
+    description: 'some defaultField'
+    generator:
+      type: sample
+      sample: name

@@ -16,7 +16,9 @@ coverage
 
 /cypress/videos/
 /cypress/screenshots/
+/src/metadata_v3
 /src/metadata_v1
+/src/test_schema
 
 # Editor directories and files
 .vscode/*
