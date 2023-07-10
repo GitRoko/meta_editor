@@ -11,10 +11,11 @@ function renderWithVuetify (component, options) {
           plugins: [vuetify],
       },
   })
+  
 }
 
 let wrapper = null
-
+ 
 beforeEach(() => {
   // render the component
   wrapper = renderWithVuetify(TextInput, {
@@ -44,9 +45,59 @@ describe('TextInput.vue Test', () => {
     expect(cmp).toBeDefined()
   })
 
-  it('mount component', async () => {
-    expect(TextInput).toBeTruthy()
-  })
+  it('should render an input element', async () => {
+    const input = wrapper.find('input');
+    expect(input.exists()).toBe(true);
+  });
+  
+  
+  it('should emit event when text is entered', async () => {
+    const input = wrapper.getComponent({ name: 'v-text-field' })
+    const text = 'default_field_3';
+
+    input.setValue(text);
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.emitted()).toHaveProperty('update:modelValue')
+    expect(wrapper.emitted()['update:modelValue']).toHaveLength(1)
+    expect(wrapper.emitted()['update:modelValue'][0]).toEqual([text])
+  });
+
+  it('should not emit event when vnew value is not unique', async () => {
+    const input = wrapper.getComponent({ name: 'v-text-field' })
+    let text = 'default_field_1';
+
+    input.setValue(text);
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.emitted()).not.toHaveProperty('update:modelValue')
+    expect(wrapper.find('.v-messages__message').text()).toBe('Value is not unique')
+  });
+
+  it('should not emit event when new value is invalid', async () => {
+    const input = wrapper.getComponent({ name: 'v-text-field' })
+    let text = 'default_field 1';
+
+    input.setValue(text);
+
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.emitted()).not.toHaveProperty('update:modelValue')
+    expect(wrapper.find('.v-messages__message').text()).toBe('Invalid, rule: ^[a-zA-Z0-9_]+$')
+  });
+
+  it('should not emit event when new value is false', async () => {
+    const input = wrapper.getComponent({ name: 'v-text-field' })
+    let text = !!'';
+
+    input.setValue(text);
+
+    await wrapper.vm.$nextTick();
+    expect(wrapper.emitted()).not.toHaveProperty('update:modelValue')
+    expect(wrapper.find('.v-messages__message').text()).toBe('Required field')
+  });
 
   it('testing props type', async () => {
     expectTypeOf(wrapper.vm.props.keyItem).toBeString('string')

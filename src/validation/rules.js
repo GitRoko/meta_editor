@@ -8,7 +8,6 @@ const rules = {
     return result
   },
   unique: (newValue, oldValue, isUnique, list = []) => {
-    // console.log('props', newValue, oldValue, isUnique, list);
     if (!newValue) {
       return 'Value is required.';
     }
@@ -16,7 +15,7 @@ const rules = {
       const index = list.findIndex((item) => item === oldValue);
       const newList = [...list]
       newList.splice(index, 1);
-      // console.log(!newList.includes(newValue) || `Value is not unique`);
+
       return !newList.includes(newValue) || `Value is not unique`;
     } else {
       return true;
@@ -25,7 +24,7 @@ const rules = {
   isValidEnum: (value, enumList) => {
     return enumList.includes(value) || `Invalid value`
   },
-  requied: (v) => {
+  required: (v) => {
     return !!v || 'Required field'
   }
 }

@@ -1,5 +1,4 @@
 <template>
-  <!-- <pre>{{ props.modelValue }}</pre> -->
   <v-chip variant="plain" size="smal">{{ modelValue }}</v-chip>
 </template>
 

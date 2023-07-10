@@ -53,7 +53,7 @@ const errorMessages = computed(() => {
 
 const validationRules = [
   (v) => rules.regexp(v, props.renderData.validation.regexp),
-  (v) => rules.requied(v),
+  (v) => rules.required(v),
   (v) => rules.unique(v, props.modelValue, props.renderData.validation.unique, props.fieldsKeys)
 ]
 
