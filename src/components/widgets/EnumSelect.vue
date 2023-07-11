@@ -78,7 +78,7 @@ const errorMessages = computed(() => {
   return errors
 })
 
-const validationRules = [(v) => rules.requied(v), (v) => rules.isValidEnum(v, itemsFromType.value)]
+const validationRules = [(v) => rules.isValidEnum(v, itemsFromType.value)]
 
 </script>
 
